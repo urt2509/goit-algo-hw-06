@@ -35,20 +35,22 @@ class Record:
         self.phones.append(phone)
 
     def remove_phone(self, phone: Phone):
-        # self.phones = list(filter(lambda p: p.value != phone.value, self.phones))
-        self.phones = [p for p in self.phones if p.value != phone.value]
+        self.phones = [p for p in self.phones if p.value != phone]
         return self.phones
 
     def find_phone(self, phone: Phone):
         for item in self.phones:
-            if item.value == phone.value:
+            if item.value == phone:
                 return item
 
-    def edit_phone(self, phone: Phone, new_phone: Phone):
+    def edit_phone(self, number, new_number):
+        phone = number if isinstance(number, Phone) else Phone(number)
+        new_phone = new_number if isinstance(new_number, Phone) else Phone(new_number)
+
         for index, p in enumerate(self.phones):
             if p.value == phone.value:
                 self.phones[index] = new_phone
-            return self.phones
+        return self.phones
 
     def __str__(self):
         return f"Contact name: {self.name.value}, phones: {';'.join(p.value for p in self.phones)}"
@@ -57,7 +59,6 @@ class Record:
 class AddressBook(UserDict):
 
     def add_record(self, record: Record):
-
         self.data[record.name.value] = record
 
     def find(self, name: str) -> Record | None:
@@ -65,6 +66,9 @@ class AddressBook(UserDict):
 
     def delete(self, name: str):
         del self.data[name]
+
+    def __str__(self):
+        return "\n".join(f"{name}:{record}" for name, record in self.data.items())
 
 
 # ----------
@@ -195,13 +199,14 @@ def bot_main(path: str = PATH):
             print(show_all())
         else:
             print("Invalid command.")
+    pass
 
 
 if __name__ == "__main__":
-    # bot_main()
-    pass
+    bot_main()
 
-    # Створення нової адресної книги
+
+# Створення нової адресної книги
 book = AddressBook()
 
 # Створення запису для John
