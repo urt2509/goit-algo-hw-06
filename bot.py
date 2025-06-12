@@ -13,17 +13,42 @@ class Field:
 
 
 class Name(Field):
-    pass
+    def __init__(self, name):
+        self.name = name
+        super().__init__(name)
 
 
 class Phone(Field):
-    pass
+    def __init__(self, number):
+        if not (number.isdigit() and len(number) == 10):
+            raise ValueError("The phone must have 10 numbers")
+        super().__init__(number)
 
 
 class Record:
     def __init__(self, name):
         self.name = Name(name)
         self.phones = []
+
+    def add_phone(self, number: Phone):
+        phone = number if isinstance(number, Phone) else Phone(number)
+        self.phones.append(phone)
+
+    def remove_phone(self, phone: Phone):
+        # self.phones = list(filter(lambda p: p.value != phone.value, self.phones))
+        self.phones = [p for p in self.phones if p.value != phone.value]
+        return self.phones
+
+    def find_phone(self, phone: Phone):
+        for item in self.phones:
+            if item.value == phone.value:
+                return item
+
+    def edit_phone(self, phone: Phone, new_phone: Phone):
+        for index, p in enumerate(self.phones):
+            if p.value == phone.value:
+                self.phones[index] = new_phone
+            return self.phones
 
     def __str__(self):
         return f"Contact name: {self.name.value}, phones: {';'.join(p.value for p in self.phones)}"
@@ -42,15 +67,7 @@ class AddressBook(UserDict):
         del self.data[name]
 
 
-john_record = Record("John")
-# print(john_record)
-
-
-book = AddressBook()
-print(book)
-book.add_record(john_record)
-print(f"This is book after adding: {book}")
-print(f"This is method find: {book.find("John")}")
+# ----------
 
 
 # decorator
@@ -181,4 +198,38 @@ def bot_main(path: str = PATH):
 
 
 if __name__ == "__main__":
-    bot_main()
+    # bot_main()
+    pass
+
+    # Створення нової адресної книги
+book = AddressBook()
+
+# Створення запису для John
+john_record = Record("John")
+john_record.add_phone("1234567890")
+john_record.add_phone("5555555555")
+
+# Додавання запису John до адресної книги
+book.add_record(john_record)
+
+# Створення та додавання нового запису для Jane
+jane_record = Record("Jane")
+jane_record.add_phone("9876543210")
+book.add_record(jane_record)
+
+# Виведення всіх записів у книзі
+
+print(book)
+
+# Знаходження та редагування телефону для John
+john = book.find("John")
+john.edit_phone("1234567890", "1112223333")
+
+print(john)  # Виведення: Contact name: John, phones: 1112223333; 5555555555
+
+# Пошук конкретного телефону у записі John
+found_phone = john.find_phone("5555555555")
+print(f"{john.name}: {found_phone}")  # Виведення: John: 5555555555
+
+# Видалення запису Jane
+book.delete("Jane")
