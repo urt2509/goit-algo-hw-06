@@ -50,8 +50,8 @@ class Record:
         if not found_phone:
             raise ValueError(f"The phone {phone} is not found")
 
-        self.remove_phone(phone)
         self.add_phone(new_phone)
+        self.remove_phone(phone)
 
         return self.phones
 
